@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Clock In</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3367D6">
+
+  <!-- Icons (optional but recommended) -->
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="icon" href="icons/icon-512.png" sizes="512x512" type="image/png">
+
+  <style>
+    html, body {height:100%; margin:0; background:#000;}
+    .wrap {display:flex; align-items:center; justify-content:center; height:100%; color:#fff; font-family:system-ui, sans-serif}
+    iframe {position:fixed; inset:0; width:100vw; height:100vh; border:0;}
+    button {font-size:16px; padding:10px 16px;}
+  </style>
+</head>
+<body>
+  <div class="wrap" id="fallback">
+    <div style="text-align:center;">
+      <h1>Clock In</h1>
+      <p>Opening app…</p>
+      <button id="openBtn">Open Now</button>
+      <p style="font-size:12px;opacity:.7;">If it doesn't open automatically, tap the button.</p>
+    </div>
+  </div>
+
+  <script>
+    // 🔗 Put your Apps Script Web App URL here (the /exec URL)
+    const GAS_URL = "https://script.google.com/macros/s/PASTE_YOUR_EXEC_URL_HERE/exec";
+
+    // OPTION A: Hard redirect (simplest, no cross-origin issues)
+    const useIframe = false; // set true if you want to *embed* instead
+
+    // Pass through any query params to GAS
+    const target = GAS_URL + (location.search || "");
+
+    if (!useIframe) {
+      // Redirect after a tick so the page can register the SW first
+      setTimeout(() => location.replace(target), 50);
+    } else {
+      // OPTION B: Iframe wrapper (keeps the PWA chrome visible)
+      const iframe = document.createElement("iframe");
+      iframe.src = target;
+      // Allow camera/geolocation inside iframe (mobile browsers may still limit this)
+      iframe.setAttribute("allow", "geolocation; camera; microphone; fullscreen; clipboard-read; clipboard-write");
+      document.body.appendChild(iframe);
+      document.getElementById("fallback").style.display = "none";
+    }
+
+    // Fallback open button
+    document.getElementById("openBtn").addEventListener("click", () => {
+      location.href = target;
+    });
+
+    // PWA: register service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(err => {
+        console.warn("SW registration failed:", err);
+      });
+    }
+
+    // Optional: show install prompt button if you want
+    let deferredPrompt;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // You could show a custom "Install" button and call deferredPrompt.prompt() on click
+      console.log("PWA install is available (trigger it via your own button if you want).");
+    });
+  </script>
+</body>
+</html>

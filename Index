@@ -32,7 +32,7 @@
 
   <script>
     // 🔗 Put your Apps Script Web App URL here (the /exec URL)
-    const GAS_URL = "https://script.google.com/macros/s/PASTE_YOUR_EXEC_URL_HERE/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz5P6O_6Z2knorlCY4rl_ps35wiWKq_fxU1RaD4sBGjHT_D7rsklGIHUeGhlHwCy5r_6g/exec";
 
     // OPTION A: Hard redirect (simplest, no cross-origin issues)
     const useIframe = false; // set true if you want to *embed* instead
